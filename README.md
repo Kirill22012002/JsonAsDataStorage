@@ -16,6 +16,16 @@ var user = new User
   UserName = "Kirill"
 };
 
+// insert new data
+await userStorage.InsertItemAsync(user);
 
+// get by id
+var result = await userStorage.GetItemAsync(user.UserId);
+
+// update by id
+await userStorage.UpdateItemAsync(user.UserId, new User { UserId = user.UserId, UserName = "Alexey" });
+
+// delete by id
+await userStorage.DeleteItemAsync(user.UserId);
 
 ```
