@@ -10,8 +10,14 @@ public class BaseStorage<T> : IBaseStorage<T>
 
     public BaseStorage(string filePath, string idField)
     {
-        _filePath = filePath;
         _idField = idField;
+
+        _filePath = Path.Combine("cache", filePath);
+        if (!File.Exists(_filePath))
+        {
+            new FileInfo(_filePath).Directory.Create();
+            File.Create(_filePath).Dispose();
+        }
     }
 
     public virtual async Task<T> GetItemAsync(dynamic id)
