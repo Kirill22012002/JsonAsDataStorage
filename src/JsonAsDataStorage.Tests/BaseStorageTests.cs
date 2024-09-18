@@ -9,8 +9,8 @@ public class BaseStorageTests
 
     public BaseStorageTests()
     {
-        _userStorage = new BaseStorage<User>(filePath: "testUsers.json", "Id");
-        _carStorage = new BaseStorage<Car>(filePath: "testCars.json", "CarId");
+        _userStorage = new BaseStorage<User>(filePath: "testUsers.json", idField: "Id");
+        _carStorage = new BaseStorage<Car>(filePath: "testCars.json", idField: "CarId");
     }
 
     #region User 
