@@ -20,12 +20,12 @@ public class BaseStorage<T> : IBaseStorage<T>
         }
     }
 
-    public virtual async Task<T> GetItemAsync(dynamic id)
+    public async Task<T> GetItemAsync(dynamic id)
     {
         return await GetItemAsync(GetFilterPredicate(id));
     }
 
-    public virtual async Task<T> GetItemAsync(Predicate<T> filter)
+    public async Task<T> GetItemAsync(Predicate<T> filter)
     {
         var existingList = await JsonFileHelper.ReloadAsync<T>(_filePath);
         if (existingList != null)
@@ -39,12 +39,12 @@ public class BaseStorage<T> : IBaseStorage<T>
         throw new KeyNotFoundException($"Item not found");
     }
 
-    public virtual async Task<IEnumerable<T>> GetAllItemsAsync()
+    public async Task<IEnumerable<T>> GetAllItemsAsync()
     {
         return await JsonFileHelper.ReloadAsync<T>(_filePath);
     }
 
-    public virtual async Task<bool> InsertItemAsync(T item)
+    public async Task<bool> InsertItemAsync(T item)
     {
         var existingList = await JsonFileHelper.ReloadAsync<T>(_filePath);
         if (existingList != null)
@@ -61,7 +61,7 @@ public class BaseStorage<T> : IBaseStorage<T>
         }
     }
 
-    public virtual async Task<bool> InsertListAsync(IEnumerable<T> items)
+    public async Task<bool> InsertListAsync(IEnumerable<T> items)
     {
         var existingList = await JsonFileHelper.ReloadAsync<T>(_filePath);
         if (existingList != null && existingList.Count() != 0)
@@ -86,7 +86,33 @@ public class BaseStorage<T> : IBaseStorage<T>
     public async Task<bool> ReplaceItemAsync(Predicate<T> filter, T item)
     {
         var existingList = await JsonFileHelper.ReloadAsync<T>(_filePath);
+        if (existingList != null)
+        {
+            var list = existingList.ToList();
+            var idx = list.FindIndex(e => filter(e));
+            if (idx != -1)
+            {
+                list[idx] = item;
+                await JsonFileHelper.UploadAsync(_filePath, list);
+                return true;
+            }
+            else
+            {
+                await InsertItemAsync(item);
+                return true;
+            }
+        }
+        return false;
+    }
 
+    public async Task<bool> UpdateItemAsync(dynamic id, T item)
+    {
+        return await UpdateItemAsync(GetFilterPredicate(id), item);
+    }
+
+    public async Task<bool> UpdateItemAsync(Predicate<T> filter, T item)
+    {
+        var existingList = await JsonFileHelper.ReloadAsync<T>(_filePath);
         if (existingList != null && existingList.Count() != 0)
         {
             var list = existingList.ToList();
@@ -99,11 +125,6 @@ public class BaseStorage<T> : IBaseStorage<T>
             }
         }
         return false;
-    }
-
-    public async Task<bool> UpdateItemAsync(dynamic id, T item)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<bool> DeleteItemAsync(dynamic id)
@@ -129,10 +150,12 @@ public class BaseStorage<T> : IBaseStorage<T>
         return false;
     }
 
-    public virtual async Task DeleteAllAsync()
+    public async Task DeleteAllAsync()
     {
         await JsonFileHelper.UploadAsync(_filePath, new List<T>());
     }
+
+    #region Private
 
     private Predicate<T> GetFilterPredicate(dynamic id)
         => (e => GetFieldValue(e, _idField) == id);
@@ -148,4 +171,6 @@ public class BaseStorage<T> : IBaseStorage<T>
         var srcProp = source.GetType().GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
         return srcProp?.GetValue(source, null);
     }
+
+    #endregion
 }
