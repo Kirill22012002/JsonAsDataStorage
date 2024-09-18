@@ -1,11 +1,11 @@
 ﻿namespace JsonAsDataStorage.Core;
 
-public interface IBaseStorage<T> where T : BaseModel
+public interface IBaseStorage<T>
 {
-    Task<T> GetItemAsync(string id);
+    Task<T> GetItemAsync(dynamic id);
     Task<IEnumerable<T>> GetAllItemsAsync();
     Task<bool> InsertItemAsync(T item);
-    Task<bool> ReplaceItemAsync(string id, T item);
-    Task<bool> UpdateItemAsync(string keidy, T item);
-    Task<bool> DeleteItemAsync(string id);
+    Task<bool> ReplaceItemAsync(dynamic id, T item);
+    Task<bool> UpdateItemAsync(dynamic id, T item);
+    Task<bool> DeleteItemAsync(dynamic id);
 }
