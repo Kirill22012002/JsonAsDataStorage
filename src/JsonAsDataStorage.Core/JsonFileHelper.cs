@@ -12,7 +12,7 @@ public class JsonFileHelper
 
     public static async Task UploadAsync<T>(string filePath, IEnumerable<T> items)
     {
-        var json = JsonConvert.SerializeObject(items);
+        var json = JsonConvert.SerializeObject(items, Formatting.Indented);
         await File.WriteAllTextAsync(filePath, json);
     }
 }
