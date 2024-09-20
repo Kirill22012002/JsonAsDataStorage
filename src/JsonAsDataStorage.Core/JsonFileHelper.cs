@@ -6,13 +6,25 @@ public class JsonFileHelper
 {
     public static async Task<IEnumerable<T>> ReloadAsync<T>(string filePath)
     {
-        var json = await File.ReadAllTextAsync(filePath);
-        return JsonConvert.DeserializeObject<IEnumerable<T>>(json);
+        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+        {
+            using (var reader = new StreamReader(fs))
+            {
+                var json = await reader.ReadToEndAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<T>>(json);
+            }
+        }
     }
 
     public static async Task UploadAsync<T>(string filePath, IEnumerable<T> items)
     {
-        var json = JsonConvert.SerializeObject(items, Formatting.Indented);
-        await File.WriteAllTextAsync(filePath, json);
+        using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
+        {
+            using (var writer = new StreamWriter(fs))
+            {
+                var json = JsonConvert.SerializeObject(items, Formatting.Indented);
+                await writer.WriteAsync(json);
+            }
+        }
     }
 }

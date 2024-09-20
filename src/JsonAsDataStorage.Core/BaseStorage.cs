@@ -6,7 +6,6 @@ public class BaseStorage<T> : IBaseStorage<T>
 {
     private readonly string _filePath;
     private readonly string _idField;
-    private Dictionary<string, T> _storage = new Dictionary<string, T>();
 
     public BaseStorage(string filePath, string idField)
     {
@@ -16,7 +15,9 @@ public class BaseStorage<T> : IBaseStorage<T>
         if (!File.Exists(_filePath))
         {
             new FileInfo(_filePath).Directory.Create();
-            File.Create(_filePath).Dispose();
+            using (var fs = new FileStream(_filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
+            {
+            }
         }
     }
 
