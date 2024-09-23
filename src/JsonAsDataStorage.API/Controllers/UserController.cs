@@ -36,8 +36,9 @@ public class UserController : ControllerBase
             Id = Guid.NewGuid().ToString(),
             Name = dto.Name,
         };
-        await _storage.InsertItemAsync(entity);
-        return Ok();
+        var result = await _storage.InsertItemAsync(entity);
+        
+        return Ok(result);
     }
 
     [HttpGet]

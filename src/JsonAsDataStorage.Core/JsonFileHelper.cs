@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace JsonAsDataStorage.Core;
 
@@ -6,25 +7,50 @@ public class JsonFileHelper
 {
     public static async Task<IEnumerable<T>> ReloadAsync<T>(string filePath)
     {
-        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+        Stopwatch sw = null;
+        var json = "{}";
+
+        while (true)
         {
-            using (var reader = new StreamReader(fs))
+            try
             {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<T>>(json);
+                json = await File.ReadAllTextAsync(filePath);
+                break;
+            }
+            catch (IOException e) when (e.Message.Contains("because it is being used by another process"))
+            {
+                sw ??= Stopwatch.StartNew();
+                if (sw.ElapsedMilliseconds > 10000)
+                    throw;
             }
         }
+
+        return JsonConvert.DeserializeObject<IEnumerable<T>>(json);
     }
 
-    public static async Task UploadAsync<T>(string filePath, IEnumerable<T> items)
+    public static async Task<bool> UploadAsync<T>(string filePath, IEnumerable<T> items)
     {
-        using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
+        Stopwatch sw = null;
+        var json = JsonConvert.SerializeObject(items, Formatting.Indented);
+
+        while (true)
         {
-            using (var writer = new StreamWriter(fs))
+            try
             {
-                var json = JsonConvert.SerializeObject(items, Formatting.Indented);
-                await writer.WriteAsync(json);
+                await File.WriteAllTextAsync(filePath, json);
+                return true;
+            }
+            catch (IOException e) when (e.Message.Contains("because it is being used by another process"))
+            {
+                sw ??= Stopwatch.StartNew();
+                if (sw.ElapsedMilliseconds > 10000)
+                    return false;
+            }
+            catch(Exception)
+            {
+                return false;
             }
         }
     }
 }
+ 
