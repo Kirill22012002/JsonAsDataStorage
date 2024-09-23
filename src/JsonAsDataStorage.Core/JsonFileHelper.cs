@@ -5,6 +5,7 @@ namespace JsonAsDataStorage.Core;
 
 public class JsonFileHelper
 {
+    // TODO: write unit-tests for testing crash
     public static async Task<IEnumerable<T>> ReloadAsync<T>(string filePath)
     {
         Stopwatch sw = null;
