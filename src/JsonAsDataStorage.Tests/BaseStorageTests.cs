@@ -169,6 +169,31 @@ public class BaseStorageTests
         Assert.Null(deletedUser);
     }
 
+    [Fact]
+    public async Task GetItemAsync_ParsedStrIdToGuidId_User()
+    {
+        var id = Guid.NewGuid();
+        var idStr = id.ToString();
+        var user = new User
+        {
+            Id = id,
+            Name = "test98",
+            Age = 56
+        };
+
+        // Insert
+        var result = await _userStorage.InsertItemAsync(user);
+        Assert.True(result);
+
+        // Get Item
+        var parsedId = new Guid(idStr);
+        var userJson = await _userStorage.GetItemAsync(parsedId);
+        Assert.NotNull(userJson);
+        Assert.Equal(user.Id, userJson.Id);
+        Assert.Equal(user.Name, userJson.Name);
+        Assert.Equal(user.Age, userJson.Age);
+    }
+
     #endregion
 
     #region Car
