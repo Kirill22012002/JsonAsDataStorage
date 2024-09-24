@@ -18,3 +18,8 @@ public class Motour
 {
     public string Name { get; set; }
 }
+
+public class TestItem
+{
+    public int Id { get; set; }
+}

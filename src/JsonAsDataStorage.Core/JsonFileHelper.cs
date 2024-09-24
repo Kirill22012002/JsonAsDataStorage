@@ -47,11 +47,10 @@ public class JsonFileHelper
                 if (sw.ElapsedMilliseconds > 10000)
                     return false;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return false;
             }
         }
     }
 }
- 
