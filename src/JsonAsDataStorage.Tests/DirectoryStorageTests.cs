@@ -20,7 +20,7 @@ public class DirectoryStorageTests
         // Arrange
         var item = new DirectoryItem
         {
-            Id = _random.Next(1, int.MaxValue),
+            Id = GetRandomId(),
             Name = "C:"
         };
 
