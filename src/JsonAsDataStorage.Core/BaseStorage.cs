@@ -4,7 +4,7 @@ namespace JsonAsDataStorage.Core;
 
 public class BaseStorage<T> : IBaseStorage<T>
 {
-    private readonly string _filePath;
+    protected readonly string _filePath;
     private readonly string _idField;
 
     public BaseStorage(string filePath, string idField)
@@ -45,7 +45,7 @@ public class BaseStorage<T> : IBaseStorage<T>
         return await JsonFileHelper.ReloadAsync<T>(_filePath);
     }
 
-    public async Task<bool> InsertItemAsync(T item)
+    public virtual async Task<bool> InsertItemAsync(T item)
     {
         var existingList = await JsonFileHelper.ReloadAsync<T>(_filePath);
         if (existingList != null)

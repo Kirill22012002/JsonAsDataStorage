@@ -37,7 +37,7 @@ public class UserController : ControllerBase
             Name = dto.Name,
         };
         var result = await _storage.InsertItemAsync(entity);
-        
+
         return Ok(result);
     }
 
