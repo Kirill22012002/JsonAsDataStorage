@@ -24,6 +24,20 @@ public class DirectoryStorage : BaseStorage<DirectoryItem>
         }
     }
 
+    public async Task<bool> DeleteItemAsync(int id)
+    {
+        var existingList = await JsonFileHelper.ReloadAsync<DirectoryItem>(_filePath);
+        if (existingList != null && existingList.Count() != 0)
+        {
+            var list = existingList.ToList();
+            list = RecursiveDelete(list, id);
+            await JsonFileHelper.UploadAsync(_filePath, list);
+
+            return true;
+        }
+        return false;
+    }
+
     public async Task<DirectoryItem> GetItemAsync(int id)
     {
         var existingList = await JsonFileHelper.ReloadAsync<DirectoryItem>(_filePath);
@@ -56,6 +70,23 @@ public class DirectoryStorage : BaseStorage<DirectoryItem>
             }
         }
         return result;
+    }
+
+    private List<DirectoryItem> RecursiveDelete(List<DirectoryItem> sourceList, int id)
+    {
+        foreach (var item in sourceList)
+        {
+            if (item.Id == id)
+            {
+                sourceList.Remove(item);
+                return sourceList;
+            }
+            else
+            {
+                item.SubDirectories = RecursiveDelete(item.SubDirectories, id);
+            }
+        }
+        return sourceList;
     }
 }
 

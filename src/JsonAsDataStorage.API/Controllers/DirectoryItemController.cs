@@ -27,6 +27,13 @@ public class DirectoryItemController : ControllerBase
         var result = await _storage.InsertItemAsync(entity);
         return Ok(result);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> RemoveDirectory([FromQuery] int id)
+    {
+        var result = await _storage.DeleteItemAsync(id);
+        return Ok(result);
+    }
 }
 
 public class AddDirectoryDto

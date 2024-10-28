@@ -1,5 +1,6 @@
 using JsonAsDataStorage.Core;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace JsonAsDataStorage.Tests;
 
@@ -304,6 +305,670 @@ public class DirectoryStorageTests
         Assert.Equal(finalExpected2, finalActual2);
     }
 
+    #region Recursive functions 
+
+    [Fact]
+    public void RecursiveDelete_ShouldReturnCorrectItems()
+    {
+        // Arrange
+        int id = GetRandomId();
+        int id1 = GetRandomId();
+        int id2 = GetRandomId();
+        int id3 = GetRandomId();
+        int id4 = GetRandomId();
+        int id5 = GetRandomId();
+        int id6 = GetRandomId();
+        int id7 = GetRandomId();
+        int id8 = GetRandomId();
+        int id9 = GetRandomId();
+        int id10 = GetRandomId();
+        int id11 = GetRandomId();
+        int id12 = GetRandomId();
+        int id13 = GetRandomId();
+        int id14 = GetRandomId();
+        int id15 = GetRandomId();
+
+        List<DirectoryItem> sourceList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id4,
+                        Name = "Program Files",
+                        SubDirectories = new List<DirectoryItem>
+                        {
+                            new DirectoryItem
+                            {
+                                Id = id5,
+                                Name = "IIS",
+                                SubDirectories = new List<DirectoryItem>
+                                {
+                                    new DirectoryItem
+                                    {
+                                        Id = id,
+                                        Name = "Asp.Net Core Module",
+                                        SubDirectories = new List<DirectoryItem>
+                                        {
+                                            new DirectoryItem
+                                            {
+                                                Id = id6,
+                                                Name = "V2",
+                                                Files = new List<FileItem> { new FileItem { Id = id7, Name = "aspnetcorev2.dll" } },
+                                                SubDirectories = new List<DirectoryItem>
+                                                {
+                                                    new DirectoryItem
+                                                    {
+                                                        Id = id8,
+                                                        Name = "18.0.24115",
+                                                        Files = new List<FileItem> { new FileItem { Id = id9, Name = "aspnetcorev2_outofprocess.dll" } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id10,
+                                        Name = "Microsoft Web Deploy",
+                                        Files = new List<FileItem>
+                                        {
+                                            new FileItem { Id = id11, Name = "Microsoft.Web.Deployment.dll" },
+                                            new FileItem { Id = id12, Name = "Microsoft.Web.Deployment.Tracing.dll" },
+                                        },
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id13,
+                                        Name = "Microsoft Web Deploy V3"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            },
+            new DirectoryItem
+            {
+                Id = id15,
+                Name = "D:"
+            }
+        };
+        List<DirectoryItem> expectedList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id4,
+                        Name = "Program Files",
+                        SubDirectories = new List<DirectoryItem>
+                        {
+                            new DirectoryItem
+                            {
+                                Id = id5,
+                                Name = "IIS",
+                                SubDirectories = new List<DirectoryItem>
+                                {
+                                    new DirectoryItem
+                                    {
+                                        Id = id10,
+                                        Name = "Microsoft Web Deploy",
+                                        Files = new List<FileItem>
+                                        {
+                                            new FileItem { Id = id11, Name = "Microsoft.Web.Deployment.dll" },
+                                            new FileItem { Id = id12, Name = "Microsoft.Web.Deployment.Tracing.dll" },
+                                        },
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id13,
+                                        Name = "Microsoft Web Deploy V3"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            },
+            new DirectoryItem
+            {
+                Id = id15,
+                Name = "D:"
+            }
+        };
+
+        Type type = typeof(DirectoryStorage);
+        MethodInfo method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(x => x.Name == "RecursiveDelete" && x.IsPrivate)
+            .First();
+
+        //Act
+        var result = (List<DirectoryItem>)method.Invoke(_storage, new object[] { sourceList, id });
+
+        //Assert 
+        var expected = JsonConvert.SerializeObject(expectedList);
+        var actual = JsonConvert.SerializeObject(result);
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RecursiveDelete_ShouldReturnCorrectItems_2()
+    {
+        // Arrange
+        int id = GetRandomId();
+        int id1 = GetRandomId();
+        int id2 = GetRandomId();
+        int id3 = GetRandomId();
+        int id4 = GetRandomId();
+        int id5 = GetRandomId();
+        int id6 = GetRandomId();
+        int id7 = GetRandomId();
+        int id8 = GetRandomId();
+        int id9 = GetRandomId();
+        int id10 = GetRandomId();
+        int id11 = GetRandomId();
+        int id12 = GetRandomId();
+        int id13 = GetRandomId();
+        int id14 = GetRandomId();
+        int id15 = GetRandomId();
+
+        List<DirectoryItem> sourceList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id4,
+                        Name = "Program Files",
+                        SubDirectories = new List<DirectoryItem>
+                        {
+                            new DirectoryItem
+                            {
+                                Id = id5,
+                                Name = "IIS",
+                                SubDirectories = new List<DirectoryItem>
+                                {
+                                    new DirectoryItem
+                                    {
+                                        Id = id15,
+                                        Name = "Asp.Net Core Module",
+                                        SubDirectories = new List<DirectoryItem>
+                                        {
+                                            new DirectoryItem
+                                            {
+                                                Id = id6,
+                                                Name = "V2",
+                                                Files = new List<FileItem> { new FileItem { Id = id7, Name = "aspnetcorev2.dll" } },
+                                                SubDirectories = new List<DirectoryItem>
+                                                {
+                                                    new DirectoryItem
+                                                    {
+                                                        Id = id8,
+                                                        Name = "18.0.24115",
+                                                        Files = new List<FileItem> { new FileItem { Id = id9, Name = "aspnetcorev2_outofprocess.dll" } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id10,
+                                        Name = "Microsoft Web Deploy",
+                                        Files = new List<FileItem>
+                                        {
+                                            new FileItem { Id = id11, Name = "Microsoft.Web.Deployment.dll" },
+                                            new FileItem { Id = id12, Name = "Microsoft.Web.Deployment.Tracing.dll" },
+                                        },
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id13,
+                                        Name = "Microsoft Web Deploy V3"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            },
+            new DirectoryItem
+            {
+                Id = id,
+                Name = "D:"
+            }
+        };
+        List<DirectoryItem> expectedList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id4,
+                        Name = "Program Files",
+                        SubDirectories = new List<DirectoryItem>
+                        {
+                            new DirectoryItem
+                            {
+                                Id = id5,
+                                Name = "IIS",
+                                SubDirectories = new List<DirectoryItem>
+                                {
+                                    new DirectoryItem
+                                    {
+                                        Id = id15,
+                                        Name = "Asp.Net Core Module",
+                                        SubDirectories = new List<DirectoryItem>
+                                        {
+                                            new DirectoryItem
+                                            {
+                                                Id = id6,
+                                                Name = "V2",
+                                                Files = new List<FileItem> { new FileItem { Id = id7, Name = "aspnetcorev2.dll" } },
+                                                SubDirectories = new List<DirectoryItem>
+                                                {
+                                                    new DirectoryItem
+                                                    {
+                                                        Id = id8,
+                                                        Name = "18.0.24115",
+                                                        Files = new List<FileItem> { new FileItem { Id = id9, Name = "aspnetcorev2_outofprocess.dll" } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id10,
+                                        Name = "Microsoft Web Deploy",
+                                        Files = new List<FileItem>
+                                        {
+                                            new FileItem { Id = id11, Name = "Microsoft.Web.Deployment.dll" },
+                                            new FileItem { Id = id12, Name = "Microsoft.Web.Deployment.Tracing.dll" },
+                                        },
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id13,
+                                        Name = "Microsoft Web Deploy V3"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            }
+        };
+
+        Type type = typeof(DirectoryStorage);
+        MethodInfo method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(x => x.Name == "RecursiveDelete" && x.IsPrivate)
+            .First();
+
+        //Act
+        var result = (List<DirectoryItem>)method.Invoke(_storage, new object[] { sourceList, id });
+
+        //Assert 
+        var expected = JsonConvert.SerializeObject(expectedList);
+        var actual = JsonConvert.SerializeObject(result);
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RecursiveDelete_ShouldReturnCorrectItems_3()
+    {
+        // Arrange
+        int id = GetRandomId();
+        int id1 = GetRandomId();
+        int id2 = GetRandomId();
+        int id3 = GetRandomId();
+        int id4 = GetRandomId();
+        int id5 = GetRandomId();
+        int id6 = GetRandomId();
+        int id7 = GetRandomId();
+        int id8 = GetRandomId();
+        int id9 = GetRandomId();
+        int id10 = GetRandomId();
+        int id11 = GetRandomId();
+        int id12 = GetRandomId();
+        int id13 = GetRandomId();
+        int id14 = GetRandomId();
+        int id15 = GetRandomId();
+
+        List<DirectoryItem> sourceList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id,
+                        Name = "Program Files",
+                        SubDirectories = new List<DirectoryItem>
+                        {
+                            new DirectoryItem
+                            {
+                                Id = id5,
+                                Name = "IIS",
+                                SubDirectories = new List<DirectoryItem>
+                                {
+                                    new DirectoryItem
+                                    {
+                                        Id = id15,
+                                        Name = "Asp.Net Core Module",
+                                        SubDirectories = new List<DirectoryItem>
+                                        {
+                                            new DirectoryItem
+                                            {
+                                                Id = id6,
+                                                Name = "V2",
+                                                Files = new List<FileItem> { new FileItem { Id = id7, Name = "aspnetcorev2.dll" } },
+                                                SubDirectories = new List<DirectoryItem>
+                                                {
+                                                    new DirectoryItem
+                                                    {
+                                                        Id = id8,
+                                                        Name = "18.0.24115",
+                                                        Files = new List<FileItem> { new FileItem { Id = id9, Name = "aspnetcorev2_outofprocess.dll" } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id10,
+                                        Name = "Microsoft Web Deploy",
+                                        Files = new List<FileItem>
+                                        {
+                                            new FileItem { Id = id11, Name = "Microsoft.Web.Deployment.dll" },
+                                            new FileItem { Id = id12, Name = "Microsoft.Web.Deployment.Tracing.dll" },
+                                        },
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id13,
+                                        Name = "Microsoft Web Deploy V3"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            },
+            new DirectoryItem
+            {
+                Id = id4,
+                Name = "D:"
+            }
+        };
+        List<DirectoryItem> expectedList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            },
+            new DirectoryItem
+            {
+                Id = id4,
+                Name = "D:"
+            }
+        };
+
+        Type type = typeof(DirectoryStorage);
+        MethodInfo method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(x => x.Name == "RecursiveDelete" && x.IsPrivate)
+            .First();
+
+        //Act
+        var result = (List<DirectoryItem>)method.Invoke(_storage, new object[] { sourceList, id });
+
+        //Assert 
+        var expected = JsonConvert.SerializeObject(expectedList);
+        var actual = JsonConvert.SerializeObject(result);
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RecursiveDelete_ShouldReturnCorrectItems_4()
+    {
+        // Arrange
+        int id = GetRandomId();
+        int id1 = GetRandomId();
+        int id2 = GetRandomId();
+        int id3 = GetRandomId();
+        int id4 = GetRandomId();
+        int id5 = GetRandomId();
+        int id6 = GetRandomId();
+        int id7 = GetRandomId();
+        int id8 = GetRandomId();
+        int id9 = GetRandomId();
+        int id10 = GetRandomId();
+        int id11 = GetRandomId();
+        int id12 = GetRandomId();
+        int id13 = GetRandomId();
+        int id14 = GetRandomId();
+        int id15 = GetRandomId();
+
+        List<DirectoryItem> sourceList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id8,
+                        Name = "Program Files",
+                        SubDirectories = new List<DirectoryItem>
+                        {
+                            new DirectoryItem
+                            {
+                                Id = id5,
+                                Name = "IIS",
+                                SubDirectories = new List<DirectoryItem>
+                                {
+                                    new DirectoryItem
+                                    {
+                                        Id = id15,
+                                        Name = "Asp.Net Core Module",
+                                        SubDirectories = new List<DirectoryItem>
+                                        {
+                                            new DirectoryItem
+                                            {
+                                                Id = id6,
+                                                Name = "V2",
+                                                Files = new List<FileItem> { new FileItem { Id = id7, Name = "aspnetcorev2.dll" } },
+                                                SubDirectories = new List<DirectoryItem>
+                                                {
+                                                    new DirectoryItem
+                                                    {
+                                                        Id = id,
+                                                        Name = "18.0.24115",
+                                                        Files = new List<FileItem> { new FileItem { Id = id9, Name = "aspnetcorev2_outofprocess.dll" } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id10,
+                                        Name = "Microsoft Web Deploy",
+                                        Files = new List<FileItem>
+                                        {
+                                            new FileItem { Id = id11, Name = "Microsoft.Web.Deployment.dll" },
+                                            new FileItem { Id = id12, Name = "Microsoft.Web.Deployment.Tracing.dll" },
+                                        },
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id13,
+                                        Name = "Microsoft Web Deploy V3"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            },
+            new DirectoryItem
+            {
+                Id = id4,
+                Name = "D:"
+            }
+        };
+        List<DirectoryItem> expectedList = new List<DirectoryItem>
+        {
+            new DirectoryItem
+            {
+                Id = id1,
+                Name = "C:",
+                Files = new List<FileItem> { new FileItem { Id = id2, Name = "DumpStack.log" }, new FileItem { Id = id3, Name = "21092004.log" } },
+                SubDirectories = new List<DirectoryItem>
+                {
+                    new DirectoryItem
+                    {
+                        Id = id8,
+                        Name = "Program Files",
+                        SubDirectories = new List<DirectoryItem>
+                        {
+                            new DirectoryItem
+                            {
+                                Id = id5,
+                                Name = "IIS",
+                                SubDirectories = new List<DirectoryItem>
+                                {
+                                    new DirectoryItem
+                                    {
+                                        Id = id15,
+                                        Name = "Asp.Net Core Module",
+                                        SubDirectories = new List<DirectoryItem>
+                                        {
+                                            new DirectoryItem
+                                            {
+                                                Id = id6,
+                                                Name = "V2",
+                                                Files = new List<FileItem> { new FileItem { Id = id7, Name = "aspnetcorev2.dll" } }
+                                            }
+                                        }
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id10,
+                                        Name = "Microsoft Web Deploy",
+                                        Files = new List<FileItem>
+                                        {
+                                            new FileItem { Id = id11, Name = "Microsoft.Web.Deployment.dll" },
+                                            new FileItem { Id = id12, Name = "Microsoft.Web.Deployment.Tracing.dll" },
+                                        },
+                                    },
+                                    new DirectoryItem
+                                    {
+                                        Id = id13,
+                                        Name = "Microsoft Web Deploy V3"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    new DirectoryItem
+                    {
+                        Id = id14,
+                        Name = "Program Files (x86)",
+                    }
+                }
+            },
+            new DirectoryItem
+            {
+                Id = id4,
+                Name = "D:"
+            }
+        };
+
+        Type type = typeof(DirectoryStorage);
+        MethodInfo method = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(x => x.Name == "RecursiveDelete" && x.IsPrivate)
+            .First();
+
+        //Act
+        var result = (List<DirectoryItem>)method.Invoke(_storage, new object[] { sourceList, id });
+
+        //Assert 
+        var expected = JsonConvert.SerializeObject(expectedList);
+        var actual = JsonConvert.SerializeObject(result);
+        Assert.Equal(expected, actual);
+    }
+
+    #endregion
 
     private int GetRandomId()
     {
