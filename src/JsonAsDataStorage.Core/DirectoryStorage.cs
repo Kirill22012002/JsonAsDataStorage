@@ -1,8 +1,23 @@
 ﻿namespace JsonAsDataStorage.Core;
 
-public class DirectoryStorage : BaseStorage<DirectoryItem>
+public class DirectoryStorage : BaseStorage<DirectoryItem>, IDirectoryStorage
 {
     public DirectoryStorage(string filePath, string idField) : base(filePath, idField) { }
+
+    public async Task<DirectoryItem> GetItemAsync(int id)
+    {
+        var existingList = await JsonFileHelper.ReloadAsync<DirectoryItem>(_filePath);
+        if (existingList != null)
+        {
+            var list = existingList.ToList();
+            var item = list.RecursiveGetById(id);
+            if (item != null)
+            {
+                return item;
+            }
+        }
+        throw new KeyNotFoundException($"Item not found");
+    }
 
     public override async Task<bool> InsertItemAsync(DirectoryItem item)
     {
@@ -15,7 +30,7 @@ public class DirectoryStorage : BaseStorage<DirectoryItem>
             var existingList = await JsonFileHelper.ReloadAsync<DirectoryItem>(_filePath);
             var list = existingList.ToList();
 
-            var necessaryItem = RecursiveGetById(item.ParentId, list);
+            var necessaryItem = list.RecursiveGetById(item.ParentId);
 
             if (necessaryItem == null) return false;
             necessaryItem.SubDirectories.Add(item);
@@ -24,35 +39,41 @@ public class DirectoryStorage : BaseStorage<DirectoryItem>
         }
     }
 
+    public async Task<bool> UpdateItemAsync(DirectoryItem item, int id)
+    {
+        var existingList = await JsonFileHelper.ReloadAsync<DirectoryItem>(_filePath);
+        if (existingList != null && existingList.Count() != 0)
+        {
+            var list = existingList.ToList();
+            var necessaryItem = list.RecursiveGetById(item.Id);
+            if (necessaryItem == null) return false;
+
+            necessaryItem.Name = item.Name;
+
+            await JsonFileHelper.UploadAsync(_filePath, list);
+            return true;
+        }
+        return false;
+    }
+
     public async Task<bool> DeleteItemAsync(int id)
     {
         var existingList = await JsonFileHelper.ReloadAsync<DirectoryItem>(_filePath);
         if (existingList != null && existingList.Count() != 0)
         {
             var list = existingList.ToList();
-            list = RecursiveDelete(list, id);
+            list = list.RecursiveDelete(id);
             await JsonFileHelper.UploadAsync(_filePath, list);
 
             return true;
         }
         return false;
     }
+}
 
-    public async Task<DirectoryItem> GetItemAsync(int id)
-    {
-        var existingList = await JsonFileHelper.ReloadAsync<DirectoryItem>(_filePath);
-        if (existingList != null)
-        {
-            var item = RecursiveGetById(id, existingList.ToList());
-            if (item != null)
-            {
-                return item;
-            }
-        }
-        throw new KeyNotFoundException($"Item not found");
-    }
-
-    private DirectoryItem RecursiveGetById(int id, List<DirectoryItem> items)
+public static class RecusriveDirectoryItem
+{
+    public static DirectoryItem RecursiveGetById(this List<DirectoryItem> items, int id)
     {
         DirectoryItem result = null;
         foreach (var item in items)
@@ -64,7 +85,7 @@ public class DirectoryStorage : BaseStorage<DirectoryItem>
             }
             else
             {
-                var dirItem = RecursiveGetById(id, item.SubDirectories);
+                var dirItem = item.SubDirectories.RecursiveGetById(id);
                 if (dirItem == null) continue;
                 else return dirItem;
             }
@@ -72,7 +93,7 @@ public class DirectoryStorage : BaseStorage<DirectoryItem>
         return result;
     }
 
-    private List<DirectoryItem> RecursiveDelete(List<DirectoryItem> sourceList, int id)
+    public static List<DirectoryItem> RecursiveDelete(this List<DirectoryItem> sourceList, int id)
     {
         foreach (var item in sourceList)
         {
@@ -83,7 +104,7 @@ public class DirectoryStorage : BaseStorage<DirectoryItem>
             }
             else
             {
-                item.SubDirectories = RecursiveDelete(item.SubDirectories, id);
+                item.SubDirectories = item.SubDirectories.RecursiveDelete(id);
             }
         }
         return sourceList;
